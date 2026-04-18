@@ -384,6 +384,13 @@ h3 {
   border: 1px solid var(--line);
 }
 
+.milestone-log-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
 .sensor-copy {
   margin-top: 6px;
   font-size: 0.82rem;
@@ -963,6 +970,10 @@ h3 {
   }
 
   .sensor-source-row {
+    grid-template-columns: 1fr;
+  }
+
+  .milestone-log-grid {
     grid-template-columns: 1fr;
   }
 

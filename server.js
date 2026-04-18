@@ -22,6 +22,9 @@ const planSchema = {
       summary: {
         type: "string",
       },
+      daily_angle_goal: {
+        type: "string",
+      },
       warmup_plan: {
         type: "array",
         items: { type: "string" },
@@ -44,6 +47,7 @@ const planSchema = {
     required: [
       "risk_level",
       "summary",
+      "daily_angle_goal",
       "warmup_plan",
       "mobility_plan",
       "workout_adjustment",
@@ -221,6 +225,8 @@ async function handleAiPlan(req, res) {
     const rawBody = await readBody(req);
     const body = JSON.parse(rawBody || "{}");
     const {
+      postOpWeek,
+      postOpDay,
       painLevel,
       sorenessLevel,
       swellingToday,
@@ -229,6 +235,8 @@ async function handleAiPlan(req, res) {
     } = body;
 
     if (
+      typeof postOpWeek !== "number" ||
+      typeof postOpDay !== "number" ||
       typeof painLevel !== "number" ||
       typeof sorenessLevel !== "number" ||
       typeof swellingToday !== "boolean" ||
@@ -265,6 +273,8 @@ async function handleAiPlan(req, res) {
               {
                 type: "input_text",
                 text: `App inputs:
+- Post-op week: ${postOpWeek}
+- Post-op day: ${postOpDay}
 - Pain level: ${painLevel}/10
 - Soreness level: ${sorenessLevel}/10
 - Swelling today: ${swellingToday ? "yes" : "no"}
@@ -276,10 +286,16 @@ Rules:
 - Keep responses supportive, cautious, and low risk.
 - Do not diagnose.
 - Focus on recovery habits, form cues, mobility, and lower-risk strengthening.
+- Use these bend milestones:
+  Week 1: 60-70 degrees
+  Week 2: 90-100 degrees
+  Weeks 4-6: 120-135+ degrees
+- For week 3, bridge carefully between week 2 and weeks 4-6.
 - If confidence is low, lower movement intensity and simplify the session.
 - If pain or soreness is high, favor lighter rehab habits and recovery.
 - If swelling is present, recommend a calmer day and lighter loading.
 - Summary must be 1 short sentence under 22 words.
+- daily_angle_goal must be 1 short sentence under 12 words.
 - Each warmup_plan item must be under 10 words.
 - Each mobility_plan item must be under 10 words.
 - workout_adjustment must be 1 short sentence under 18 words.

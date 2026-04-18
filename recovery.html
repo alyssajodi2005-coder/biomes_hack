@@ -30,7 +30,7 @@
 
       <header class="app-header">
         <div>
-          <p class="micro-copy">🩹 Post-surgery support</p>
+          <p class="micro-copy">🩹 Daily therapy support</p>
           <h1>ACL Recovery</h1>
         </div>
         <div class="avatar">PT</div>
@@ -38,9 +38,9 @@
 
       <section class="page-intro">
         <p class="label">Recovery view</p>
-        <h2>Log symptoms and get rehab guidance that fits today.</h2>
+        <h2>Log symptoms and get a therapy plan that fits today.</h2>
         <p class="support-text">
-          Keep recovery simple with a quick check-in, therapy cues, and short AI guidance.
+          Use this page for the daily rehab side while the brace and flex sensor handle angle milestones.
         </p>
       </section>
 
@@ -50,9 +50,34 @@
             <p class="label">Daily check-in</p>
             <h3>How does the knee feel today?</h3>
           </div>
-          <span class="badge">5 quick inputs</span>
+          <span class="badge">6 quick inputs</span>
         </div>
         <form id="ai-plan-form" class="form-grid">
+          <label class="form-field">
+            <span class="field-label">Post-op week</span>
+            <select name="postOpWeek" required>
+              <option value="1">Week 1</option>
+              <option value="2">Week 2</option>
+              <option value="3">Week 3</option>
+              <option value="4" selected>Week 4</option>
+              <option value="5">Week 5</option>
+              <option value="6">Week 6</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span class="field-label">Post-op day</span>
+            <select name="postOpDay" required>
+              <option value="1">Day 1</option>
+              <option value="2">Day 2</option>
+              <option value="3">Day 3</option>
+              <option value="4">Day 4</option>
+              <option value="5" selected>Day 5</option>
+              <option value="6">Day 6</option>
+              <option value="7">Day 7</option>
+            </select>
+          </label>
+
           <label class="form-field">
             <span class="field-label">Pain level (0-10)</span>
             <input type="number" name="painLevel" min="0" max="10" value="4" required />
@@ -97,7 +122,7 @@
         <div class="panel-head">
           <div>
             <p class="label">AI response</p>
-            <h3>Today’s recovery guidance</h3>
+            <h3>Today’s therapy guidance</h3>
           </div>
           <span class="status-pill">JSON</span>
         </div>
@@ -107,10 +132,11 @@
             <strong id="risk-level">Moderate</strong>
           </article>
           <article class="mini-stat">
-            <span class="label">Summary</span>
-            <strong id="summary-text" class="summary-copy">Pain and soreness suggest a lighter rehab block today.</strong>
+            <span class="label">Daily angle goal</span>
+            <strong id="daily-angle-goal">125°</strong>
           </article>
         </div>
+        <p class="support-text compact-copy" id="summary-text">Pain and soreness suggest a lighter therapy block today.</p>
       </section>
 
       <section class="panel-card">
@@ -142,8 +168,8 @@
 
       <section class="recovery-guidance-grid">
         <article class="panel-card guidance-block">
-          <p class="label">Real-time feedback</p>
-          <h3>Adjust the movement</h3>
+          <p class="label">Session adjustment</p>
+          <h3>Adjust today’s rehab</h3>
           <p class="support-text compact-copy" id="workout-adjustment">Reduce depth, slow the rep, and stop if control drops.</p>
         </article>
         <article class="panel-card guidance-block">

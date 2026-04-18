@@ -2,6 +2,7 @@ const form = document.getElementById("ai-plan-form");
 
 if (form) {
   const riskLevel = document.getElementById("risk-level");
+  const dailyAngleGoal = document.getElementById("daily-angle-goal");
   const summaryText = document.getElementById("summary-text");
   const warmupList = document.getElementById("warmup-list");
   const mobilityList = document.getElementById("mobility-list");
@@ -38,6 +39,8 @@ if (form) {
 
     const formData = new FormData(form);
     const payload = {
+      postOpWeek: Number(formData.get("postOpWeek")),
+      postOpDay: Number(formData.get("postOpDay")),
       painLevel: Number(formData.get("painLevel")),
       sorenessLevel: Number(formData.get("sorenessLevel")),
       swellingToday: formData.get("swellingToday") === "yes",
@@ -65,6 +68,7 @@ if (form) {
       const result = await response.json();
 
       riskLevel.textContent = result.risk_level;
+      dailyAngleGoal.textContent = shortenText(result.daily_angle_goal, 40);
       summaryText.textContent = shortenText(result.summary, 150);
       workoutAdjustment.textContent = shortenText(result.workout_adjustment, 120);
       recoveryTip.textContent = shortenText(result.recovery_tip, 120);
@@ -72,6 +76,7 @@ if (form) {
       renderList(mobilityList, (result.mobility_plan || []).map((item) => shortenText(item, 70)));
     } catch (error) {
       riskLevel.textContent = "Unavailable";
+      dailyAngleGoal.textContent = "Check stage";
       summaryText.textContent = error.message;
       workoutAdjustment.textContent = "No movement guidance available until the AI response succeeds.";
       recoveryTip.textContent = "Check billing or quota, then try again.";

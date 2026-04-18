@@ -7,10 +7,42 @@ const movementNote = document.getElementById("movement-note");
 const riskValue = document.getElementById("risk-value");
 const riskNote = document.getElementById("risk-note");
 const sleeveFeedback = document.getElementById("sleeve-feedback");
+const milestoneMet = document.getElementById("milestone-met");
+const postOpWeek = document.getElementById("postop-week");
+const postOpDay = document.getElementById("postop-day");
 let currentMockAngle = 0;
+
+function getMilestoneForWeek(week) {
+  if (week <= 1) {
+    return { target: 65, range: "60-70°", label: "Week 1 goal" };
+  }
+  if (week === 2) {
+    return { target: 95, range: "90-100°", label: "Week 2 goal" };
+  }
+  if (week === 3) {
+    return { target: 110, range: "100-115°", label: "Week 3 bridge" };
+  }
+  return { target: 125, range: "120-135°+", label: `Week ${week} goal` };
+}
 
 function getMockAngle() {
   return Math.floor(Math.random() * 38) + 24;
+}
+
+function updateMilestoneUI() {
+  const week = Number(postOpWeek?.value || 4);
+  const milestone = getMilestoneForWeek(week);
+  movementValue.textContent = `${milestone.target}°`;
+  movementNote.textContent = `${milestone.label} · ${milestone.range}`;
+  return milestone;
+}
+
+function setMilestoneState(isMet, note = "Awaiting read") {
+  if (milestoneMet) {
+    milestoneMet.value = isMet ? "true" : "false";
+  }
+  riskValue.textContent = isMet ? "Met" : "Not yet";
+  riskNote.textContent = note;
 }
 
 function setSleeveReady() {
@@ -23,26 +55,26 @@ function setSleeveReady() {
   currentMockAngle = getMockAngle();
   angleValue.textContent = `${currentMockAngle}°`;
   angleNote.textContent = "Sensor preview";
-  movementValue.textContent = "0%";
-  movementNote.textContent = "Ready";
-  riskValue.textContent = "0";
-  riskNote.textContent = "Awaiting read";
-  sleeveFeedback.textContent = "Feedback: demo sleeve data is ready. Analyze the latest feed for a recovery-safe risk check.";
+  updateMilestoneUI();
+  setMilestoneState(false, "Awaiting read");
+  sleeveFeedback.textContent = "Feedback: demo brace data is ready. Check whether today’s bend milestone has been reached safely.";
 }
 
 function setLoadingState() {
   sleeveAnalyze.disabled = true;
-  sleeveAnalyze.textContent = "Reading...";
-  sleeveFeedback.textContent = "Feedback: checking the latest sleeve reading and building a recovery-safe risk read.";
+  sleeveAnalyze.textContent = "Checking...";
+  sleeveFeedback.textContent = "Feedback: checking the latest brace reading against today’s target bend milestone.";
 }
 
 function setIdleButton() {
   sleeveAnalyze.disabled = false;
-  sleeveAnalyze.textContent = "Interpret sleeve";
+  sleeveAnalyze.textContent = "Check milestone";
 }
 
 async function analyzeSleeveAngle() {
   const angle = currentMockAngle || getMockAngle();
+  const milestone = updateMilestoneUI();
+  const day = Number(postOpDay?.value || 5);
 
   angleValue.textContent = `${angle}°`;
   setLoadingState();
@@ -63,15 +95,16 @@ async function analyzeSleeveAngle() {
     }
 
     angleValue.textContent = `${payload.angle_degrees}°`;
-    angleNote.textContent = payload.angle_note;
-    movementValue.textContent = `${payload.movement_score}%`;
-    movementNote.textContent = payload.movement_note;
-    riskValue.textContent = payload.risk_level;
-    riskNote.textContent = payload.risk_note;
+    angleNote.textContent = `${payload.angle_note} · day ${day}`;
+    updateMilestoneUI();
+    setMilestoneState(payload.angle_degrees >= milestone.target, payload.risk_note);
     sleeveFeedback.textContent = `Feedback: ${payload.feedback}`;
   } catch (error) {
-    movementValue.textContent = "0%";
+    updateMilestoneUI();
     movementNote.textContent = "Retry";
+    if (milestoneMet) {
+      milestoneMet.value = "false";
+    }
     riskValue.textContent = "Error";
     riskNote.textContent = "Unavailable";
     sleeveFeedback.textContent = `Feedback: ${error.message}`;
@@ -86,6 +119,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   setSleeveReady();
+  postOpWeek?.addEventListener("change", updateMilestoneUI);
+  postOpDay?.addEventListener("change", updateMilestoneUI);
 
   sleeveAnalyze.addEventListener("click", analyzeSleeveAngle);
 });

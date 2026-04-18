@@ -31,7 +31,7 @@
 
       <header class="app-header">
         <div>
-          <p class="micro-copy">🦿 Knee Care Coach</p>
+          <p class="micro-copy">🦿 Flex Sensor Milestones</p>
           <h1>KneedThat</h1>
         </div>
         <div class="avatar">KT</div>
@@ -40,57 +40,82 @@
       <section class="panel-card device-card">
         <div class="panel-head">
           <div>
-            <p class="label">Knee sleeve input</p>
-            <h3>Live movement guidance</h3>
+            <p class="label">Brace sensor</p>
+            <h3>Knee angle read</h3>
           </div>
           <span class="status-pill" id="sleeve-status">Demo feed</span>
         </div>
         <p class="support-text">
-          Connect the sleeve and let the app translate sensor data into safe recovery feedback for ACL rehab.
+          The flex sensor inside the compression brace tracks knee bend so users can hit the right post-surgery angle milestone safely.
         </p>
+        <div class="milestone-log-grid">
+          <label class="form-field">
+            <span class="field-label">Post-op week</span>
+            <select id="postop-week">
+              <option value="1">Week 1</option>
+              <option value="2">Week 2</option>
+              <option value="3">Week 3</option>
+              <option value="4" selected>Week 4</option>
+              <option value="5">Week 5</option>
+              <option value="6">Week 6</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span class="field-label">Post-op day</span>
+            <select id="postop-day">
+              <option value="1">Day 1</option>
+              <option value="2">Day 2</option>
+              <option value="3">Day 3</option>
+              <option value="4">Day 4</option>
+              <option value="5" selected>Day 5</option>
+              <option value="6">Day 6</option>
+              <option value="7">Day 7</option>
+            </select>
+          </label>
+        </div>
         <div class="sensor-source-row">
           <div>
-            <span class="field-label">Sensor source</span>
-            <p class="support-text sensor-copy">Bluetooth sleeve feed placeholder until the live flex sensor is connected.</p>
+            <p class="support-text sensor-copy">Arduino flex sensor stream placeholder until the brace is fully calibrated and connected live.</p>
           </div>
           <button type="button" class="primary-action sleeve-action" id="sleeve-analyze">
-            Analyze feed
+            Check milestone
           </button>
         </div>
         <div class="device-grid">
           <article class="signal-card">
-            <span class="signal-label">Angle</span>
+            <span class="signal-label">Current angle</span>
             <strong id="angle-value">0°</strong>
             <small id="angle-note">Waiting</small>
           </article>
           <article class="signal-card">
-            <span class="signal-label">Control</span>
-            <strong id="movement-value">0%</strong>
-            <small id="movement-note">No data</small>
+            <span class="signal-label">Target</span>
+            <strong id="movement-value">45°</strong>
+            <small id="movement-note">Week 6 goal</small>
           </article>
           <article class="signal-card alert-signal">
-            <span class="signal-label">Risk</span>
-            <strong id="risk-value">0</strong>
-            <small id="risk-note">Connect sleeve</small>
+            <span class="signal-label">Milestone</span>
+            <strong id="risk-value">Not yet</strong>
+            <small id="risk-note">Awaiting read</small>
+            <input type="hidden" id="milestone-met" value="false" />
           </article>
         </div>
         <div class="tip device-tip">
-          <p id="sleeve-feedback">Feedback: connect the sleeve to start reading knee movement.</p>
+          <p id="sleeve-feedback">Feedback: once calibrated, the brace will buzz when today’s bend milestone is reached safely.</p>
         </div>
       </section>
 
       <section class="panel-card accent-card">
         <div class="panel-head">
           <div>
-            <p class="label">AI interpretation</p>
-            <h3>What the sleeve flags</h3>
+            <p class="label">Milestone logic</p>
+            <h3>How the device helps recovery</h3>
           </div>
           <span class="badge">Live</span>
         </div>
         <ul class="task-list">
-          <li>Good reps keep control steady and risk lower</li>
-          <li>Bad reps show collapse, overextension, or unstable loading</li>
-          <li>The app turns that into real-time reinjury risk feedback</li>
+          <li>Calibrate raw flex sensor data into an exact knee angle</li>
+          <li>Match the angle to the user’s post-surgery timeline goal</li>
+          <li>Buzz when the safe milestone is met and flag risky over-bending</li>
         </ul>
       </section>
 
