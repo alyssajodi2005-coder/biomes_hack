@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KneedThat App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="kneedthat.css" />
+  <script src="coach-mode.js" defer></script>
+</head>
+<body>
+  <main class="app-stage">
+    <section class="phone">
+      <nav class="navbar navbar-expand top-app-nav">
+        <div class="container-fluid p-0">
+          <div class="navbar-nav top-links">
+            <a class="nav-link active" aria-current="page" href="KneedThat.html">Home</a>
+            <a class="nav-link" href="plan.html">Plan</a>
+            <a class="nav-link" href="recovery.html">Recover</a>
+          </div>
+          <a class="settings-link" href="settings.html" aria-label="Open settings" title="Settings">⚙️</a>
+        </div>
+      </nav>
+
+      <header class="app-header">
+        <div>
+          <p class="micro-copy">🦿 Knee Care Coach</p>
+          <h1>KneedThat</h1>
+        </div>
+        <div class="avatar">KT</div>
+      </header>
+
+      <section class="page-intro">
+        <p class="label">Dashboard</p>
+        <h2>Track your week and keep your knee work on schedule.</h2>
+        <p class="support-text">
+          See your streak, your next session, and the fastest way back into the app.
+        </p>
+      </section>
+
+      <section class="stats-row">
+        <article class="small-card">
+          <p class="label">Workouts done</p>
+          <strong>4</strong>
+        </article>
+        <article class="small-card">
+          <p class="label">Streak</p>
+          <strong>6 days</strong>
+        </article>
+      </section>
+
+      <section class="panel-card device-card">
+        <div class="panel-head">
+          <div>
+            <p class="label">Knee sleeve input</p>
+            <h3>Sensor + AI risk check</h3>
+          </div>
+          <span class="status-pill">Live</span>
+        </div>
+        <p class="support-text">
+          The connected knee sleeve reads load, movement symmetry, and instability, then the AI flags when risk starts climbing.
+        </p>
+        <div class="device-grid">
+          <article class="signal-card">
+            <span class="signal-label">Load</span>
+            <strong>72%</strong>
+            <small>Stable</small>
+          </article>
+          <article class="signal-card">
+            <span class="signal-label">Symmetry</span>
+            <strong>88%</strong>
+            <small>Good</small>
+          </article>
+          <article class="signal-card alert-signal">
+            <span class="signal-label">Risk</span>
+            <strong>Moderate</strong>
+            <small>Watch fatigue</small>
+          </article>
+        </div>
+        <div class="tip device-tip">
+          <span class="tip-icon">🦿</span>
+          <p>AI feedback: landing control dropped in the last set, so keep the next block low impact and slower tempo.</p>
+        </div>
+      </section>
+
+      <section class="panel-card calendar-card">
+        <div class="panel-head">
+          <div>
+            <p class="label">Workout tracker</p>
+            <h3>April training calendar</h3>
+          </div>
+          <span class="badge">Week 2</span>
+        </div>
+        <div class="calendar-weekdays">
+          <span>M</span>
+          <span>T</span>
+          <span>W</span>
+          <span>T</span>
+          <span>F</span>
+          <span>S</span>
+          <span>S</span>
+        </div>
+        <div class="calendar-grid">
+          <span class="calendar-day">8</span>
+          <span class="calendar-day done">9</span>
+          <span class="calendar-day done">10</span>
+          <span class="calendar-day">11</span>
+          <span class="calendar-day planned">12</span>
+          <span class="calendar-day done">13</span>
+          <span class="calendar-day today">14</span>
+        </div>
+        <p class="support-text">
+          Filled days show completed sessions, and highlighted days mark today’s scheduled training block.
+        </p>
+      </section>
+
+      <section class="panel-card">
+        <div class="panel-head">
+          <div>
+            <p class="label">Today</p>
+            <h3>Main focus</h3>
+          </div>
+          <span class="status-pill">Ready</span>
+        </div>
+        <ul class="task-list">
+          <li>Complete 10 minutes of mobility before training</li>
+          <li>Use the AI plan if pain or fatigue feels higher today</li>
+          <li>Log recovery notes after your session</li>
+        </ul>
+      </section>
+
+      <section class="panel-card accent-card">
+        <div class="panel-head">
+          <div>
+            <p class="label">This week</p>
+            <h3>Upcoming sessions</h3>
+          </div>
+        </div>
+        <ul class="task-list">
+          <li>Mon: mobility and activation</li>
+          <li>Wed: lower body strength plan</li>
+          <li>Fri: balance and recovery circuit</li>
+        </ul>
+      </section>
+
+      <section class="panel-card coach-card hidden-panel" id="coach-roster-panel" hidden>
+        <div class="panel-head">
+          <div>
+            <p class="label">Coach mode</p>
+            <h3>Team roster</h3>
+          </div>
+          <span class="status-pill">Live</span>
+        </div>
+        <p class="support-text">
+          Review athlete check-ins before and after training, then flag anyone who needs a lighter day.
+        </p>
+        <div class="athlete-list">
+          <div class="athlete-row">
+            <div>
+              <strong>Maya R.</strong>
+              <p class="support-text">Pre: pain 2/10, post: fatigue up</p>
+            </div>
+            <span class="mini-pill">Review</span>
+          </div>
+          <div class="athlete-row">
+            <div>
+              <strong>Jordan T.</strong>
+              <p class="support-text">Pre: ready, post: symmetry dipped</p>
+            </div>
+            <span class="mini-pill">Watch</span>
+          </div>
+          <div class="athlete-row">
+            <div>
+              <strong>Alex P.</strong>
+              <p class="support-text">Pre: stiffness high, post: stable</p>
+            </div>
+            <span class="mini-pill">Clear</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel-card">
+        <div class="panel-head">
+          <div>
+            <p class="label">Recovery note</p>
+            <h3>What to watch today</h3>
+          </div>
+          <span class="status-pill">Simple</span>
+        </div>
+        <p class="support-text">
+          Keep jump volume low, stay smooth on landings, and use the sleeve feedback before pushing into higher-impact work.
+        </p>
+      </section>
+
+    </section>
+  </main>
+</body>
+</html>
