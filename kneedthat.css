@@ -157,6 +157,10 @@ a {
 .progress-copy {
   justify-content: space-between;
 }
+.app-header {
+  margin-left: 10px;
+  margin-right: 8px;
+}
 
 .stats-row,
 .hero-actions {
@@ -174,6 +178,10 @@ a {
 
 .micro-copy {
   color: var(--muted);
+}
+.label {
+  color: var(--green-deep);
+  font-size: 1rem;
 }
 
 h1,
