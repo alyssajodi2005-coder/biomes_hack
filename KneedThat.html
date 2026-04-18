@@ -22,8 +22,8 @@
         <div class="container-fluid p-0">
           <div class="navbar-nav top-links">
             <a class="nav-link active" aria-current="page" href="KneedThat.html">Home</a>
-            <a class="nav-link" href="plan.html">Plan</a>
             <a class="nav-link" href="recovery.html">Recover</a>
+            <a class="nav-link" href="plan.html">Plan</a>
           </div>
           <a class="settings-link" href="settings.html" aria-label="Open settings" title="Settings">⚙️</a>
         </div>
@@ -41,26 +41,20 @@
         <div class="panel-head">
           <div>
             <p class="label">Knee sleeve input</p>
-            <h3>Sensor + AI recovery read</h3>
+            <h3>Live movement guidance</h3>
           </div>
-          <div class="device-status-wrap">
-            <span class="status-pill" id="sleeve-status">Off</span>
-            <label class="switch-toggle" for="sleeve-toggle" aria-label="Toggle sleeve connection">
-              <input type="checkbox" id="sleeve-toggle" />
-              <span class="switch-slider"></span>
-            </label>
-          </div>
+          <span class="status-pill" id="sleeve-status">Demo feed</span>
         </div>
         <p class="support-text">
-          Connect the sleeve, enter the knee angle, and let the AI interpret how that movement could affect a recovering knee.
+          Connect the sleeve and let the app translate sensor data into safe recovery feedback for ACL rehab.
         </p>
-        <div class="sleeve-controls">
-          <label class="form-field">
-            <span class="field-label">Knee angle</span>
-            <input type="number" id="sleeve-angle" min="0" max="140" value="0" disabled />
-          </label>
-          <button type="button" class="primary-action sleeve-action" id="sleeve-analyze" disabled>
-            Interpret sleeve
+        <div class="sensor-source-row">
+          <div>
+            <span class="field-label">Sensor source</span>
+            <p class="support-text sensor-copy">Bluetooth sleeve feed placeholder until the live flex sensor is connected.</p>
+          </div>
+          <button type="button" class="primary-action sleeve-action" id="sleeve-analyze">
+            Analyze feed
           </button>
         </div>
         <div class="device-grid">
@@ -70,7 +64,7 @@
             <small id="angle-note">Waiting</small>
           </article>
           <article class="signal-card">
-            <span class="signal-label">Movement</span>
+            <span class="signal-label">Control</span>
             <strong id="movement-value">0%</strong>
             <small id="movement-note">No data</small>
           </article>
@@ -85,113 +79,19 @@
         </div>
       </section>
 
-      <section class="panel-card calendar-card">
-        <div class="panel-head">
-          <div>
-            <p class="label">Workout tracker</p>
-            <h3>April training calendar</h3>
-          </div>
-          <span class="badge">Week 2</span>
-        </div>
-        <div class="calendar-weekdays">
-          <span>M</span>
-          <span>T</span>
-          <span>W</span>
-          <span>T</span>
-          <span>F</span>
-          <span>S</span>
-          <span>S</span>
-        </div>
-        <div class="calendar-grid">
-          <span class="calendar-day">8</span>
-          <span class="calendar-day done">9</span>
-          <span class="calendar-day done">10</span>
-          <span class="calendar-day">11</span>
-          <span class="calendar-day planned">12</span>
-          <span class="calendar-day done">13</span>
-          <span class="calendar-day today">14</span>
-        </div>
-        <p class="support-text">
-          Filled days show completed sessions, and highlighted days mark today’s scheduled training block.
-        </p>
-      </section>
-
-      <section class="panel-card">
-        <div class="panel-head">
-          <div>
-            <p class="label">Today</p>
-            <h3>Main focus</h3>
-          </div>
-          <span class="status-pill">Ready</span>
-        </div>
-        <ul class="task-list">
-          <li>Complete 10 minutes of mobility before training</li>
-          <li>Use the AI plan if pain or fatigue feels higher today</li>
-          <li>Log recovery notes after your session</li>
-        </ul>
-      </section>
-
       <section class="panel-card accent-card">
         <div class="panel-head">
           <div>
-            <p class="label">This week</p>
-            <h3>Upcoming sessions</h3>
+            <p class="label">AI interpretation</p>
+            <h3>What the sleeve flags</h3>
           </div>
+          <span class="badge">Live</span>
         </div>
         <ul class="task-list">
-          <li>Mon: mobility and activation</li>
-          <li>Wed: lower body strength plan</li>
-          <li>Fri: balance and recovery circuit</li>
+          <li>Good reps keep control steady and risk lower</li>
+          <li>Bad reps show collapse, overextension, or unstable loading</li>
+          <li>The app turns that into real-time reinjury risk feedback</li>
         </ul>
-      </section>
-
-      <section class="panel-card coach-card hidden-panel" id="coach-roster-panel" hidden>
-        <div class="panel-head">
-          <div>
-            <p class="label">Coach mode</p>
-            <h3>Team roster</h3>
-          </div>
-          <span class="status-pill">Live</span>
-        </div>
-        <p class="support-text">
-          Review athlete check-ins before and after training, then flag anyone who needs a lighter day.
-        </p>
-        <div class="athlete-list">
-          <div class="athlete-row">
-            <div>
-              <strong>Maya R.</strong>
-              <p class="support-text">Pre: pain 2/10, post: fatigue up</p>
-            </div>
-            <span class="mini-pill">Review</span>
-          </div>
-          <div class="athlete-row">
-            <div>
-              <strong>Jordan T.</strong>
-              <p class="support-text">Pre: ready, post: symmetry dipped</p>
-            </div>
-            <span class="mini-pill">Watch</span>
-          </div>
-          <div class="athlete-row">
-            <div>
-              <strong>Alex P.</strong>
-              <p class="support-text">Pre: stiffness high, post: stable</p>
-            </div>
-            <span class="mini-pill">Clear</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel-card">
-        <div class="panel-head">
-          <div>
-            <p class="label">Recovery note</p>
-            <h3>What to watch today</h3>
-          </div>
-          <span class="status-pill">Simple</span>
-        </div>
-        <p class="support-text">
-          Keep jump volume low, stay smooth on landings, and use the sleeve feedback before pushing into higher-impact work.
-        </p>
       </section>
 
     </section>

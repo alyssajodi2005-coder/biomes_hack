@@ -221,20 +221,18 @@ async function handleAiPlan(req, res) {
     const rawBody = await readBody(req);
     const body = JSON.parse(rawBody || "{}");
     const {
-      exercise,
       painLevel,
-      warmupDone,
-      instabilityScore,
-      fatigueScore,
+      sorenessLevel,
+      swellingToday,
+      confidenceLevel,
       goal,
     } = body;
 
     if (
-      typeof exercise !== "string" ||
       typeof painLevel !== "number" ||
-      typeof warmupDone !== "boolean" ||
-      typeof instabilityScore !== "number" ||
-      typeof fatigueScore !== "number" ||
+      typeof sorenessLevel !== "number" ||
+      typeof swellingToday !== "boolean" ||
+      typeof confidenceLevel !== "number" ||
       typeof goal !== "string"
     ) {
       return json(res, 400, {
@@ -257,7 +255,7 @@ async function handleAiPlan(req, res) {
               {
                 type: "input_text",
                 text:
-                  "You are a cautious knee injury-prevention coach for athletes. Do not diagnose, do not claim certainty, do not replace a clinician, and base recommendations only on the provided inputs. Return concise JSON only. Keep every recommendation short, practical, and easy to scan on a mobile app.",
+                  "You are a cautious ACL recovery assistant. Do not diagnose, do not claim certainty, do not replace a clinician, and base recommendations only on the provided inputs. Return concise JSON only. Keep every recommendation short, practical, and easy to scan on a mobile app.",
               },
             ],
           },
@@ -267,19 +265,20 @@ async function handleAiPlan(req, res) {
               {
                 type: "input_text",
                 text: `App inputs:
-- Exercise type: ${exercise}
 - Pain level: ${painLevel}/10
-- Warm-up completed: ${warmupDone ? "yes" : "no"}
-- Knee instability score: ${instabilityScore}/100
-- Fatigue score: ${fatigueScore}/100
+- Soreness level: ${sorenessLevel}/10
+- Swelling today: ${swellingToday ? "yes" : "no"}
+- Confidence moving: ${confidenceLevel}/10
 - Goal: ${goal}
 
 Rules:
 - Use only the provided inputs.
 - Keep responses supportive, cautious, and low risk.
 - Do not diagnose.
-- If instability or fatigue is high, lower training intensity.
-- If warm-up is not completed, prioritize warm-up recommendations.
+- Focus on recovery habits, form cues, mobility, and lower-risk strengthening.
+- If confidence is low, lower movement intensity and simplify the session.
+- If pain or soreness is high, favor lighter rehab habits and recovery.
+- If swelling is present, recommend a calmer day and lighter loading.
 - Summary must be 1 short sentence under 22 words.
 - Each warmup_plan item must be under 10 words.
 - Each mobility_plan item must be under 10 words.

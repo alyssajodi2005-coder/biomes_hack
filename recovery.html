@@ -12,6 +12,7 @@
     rel="stylesheet"
   />
   <link rel="stylesheet" href="kneedthat.css" />
+  <script src="plan.js" defer></script>
 </head>
 <body>
   <main class="app-stage">
@@ -20,8 +21,8 @@
         <div class="container-fluid p-0">
           <div class="navbar-nav top-links">
             <a class="nav-link" href="KneedThat.html">Home</a>
-            <a class="nav-link" href="plan.html">Plan</a>
             <a class="nav-link active" aria-current="page" href="recovery.html">Recover</a>
+            <a class="nav-link" href="plan.html">Plan</a>
           </div>
           <a class="settings-link" href="settings.html" aria-label="Open settings" title="Settings">⚙️</a>
         </div>
@@ -37,62 +38,119 @@
 
       <section class="page-intro">
         <p class="label">Recovery view</p>
-        <h2>See what to focus on before pushing harder.</h2>
+        <h2>Log symptoms and get rehab guidance that fits today.</h2>
         <p class="support-text">
-          Stay organized with progress tracking, swelling awareness, and milestone reminders.
+          Keep recovery simple with a quick check-in, therapy cues, and short AI guidance.
         </p>
+      </section>
+
+      <section class="panel-card">
+        <div class="panel-head">
+          <div>
+            <p class="label">Daily check-in</p>
+            <h3>How does the knee feel today?</h3>
+          </div>
+          <span class="badge">5 quick inputs</span>
+        </div>
+        <form id="ai-plan-form" class="form-grid">
+          <label class="form-field">
+            <span class="field-label">Pain level (0-10)</span>
+            <input type="number" name="painLevel" min="0" max="10" value="4" required />
+          </label>
+
+          <label class="form-field">
+            <span class="field-label">Soreness level (0-10)</span>
+            <input type="number" name="sorenessLevel" min="0" max="10" value="3" required />
+          </label>
+
+          <label class="form-field">
+            <span class="field-label">Swelling today</span>
+            <select name="swellingToday" required>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span class="field-label">Confidence moving (0-10)</span>
+            <input type="number" name="confidenceLevel" min="0" max="10" value="6" required />
+          </label>
+
+          <label class="form-field">
+            <span class="field-label">Goal</span>
+            <select name="goal" required>
+              <option value="recovery">Recovery</option>
+              <option value="mobility">Mobility</option>
+              <option value="strengthening">Strengthening</option>
+              <option value="warm-up">Warm-up</option>
+            </select>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-action">Get guidance</button>
+            <p class="form-note">Short rehab guidance only. Fast to scan, easy to follow.</p>
+          </div>
+        </form>
       </section>
 
       <section class="panel-card accent-card">
         <div class="panel-head">
           <div>
-            <p class="label">Progress</p>
-            <h3>Week 6 of recovery</h3>
+            <p class="label">AI response</p>
+            <h3>Today’s recovery guidance</h3>
           </div>
-          <span class="status-pill">On track</span>
+          <span class="status-pill">JSON</span>
         </div>
-        <div class="progress-block">
-          <div class="progress-copy">
-            <span>Recovery score</span>
-            <strong>68%</strong>
-          </div>
-          <div class="progress-bar">
-            <span></span>
-          </div>
+        <div class="split-metrics">
+          <article class="mini-stat">
+            <span class="label">Risk level</span>
+            <strong id="risk-level">Moderate</strong>
+          </article>
+          <article class="mini-stat">
+            <span class="label">Summary</span>
+            <strong id="summary-text" class="summary-copy">Pain and soreness suggest a lighter rehab block today.</strong>
+          </article>
         </div>
-        <p class="support-text">
-          Focus on range of motion, swelling control, and steady strength before higher impact work.
-        </p>
       </section>
 
       <section class="panel-card">
         <div class="panel-head">
           <div>
-            <p class="label">Today</p>
-            <h3>Recovery checklist</h3>
+            <p class="label">Therapy plan</p>
+            <h3>What to do today</h3>
           </div>
         </div>
-        <ul class="task-list">
-          <li>Complete knee extension and flexion drills</li>
-          <li>Log pain and swelling after activity</li>
-          <li>Do quad activation and balance work</li>
-          <li>Review return-to-sport notes with your care team</li>
-        </ul>
+        <div class="therapy-stack">
+          <div>
+            <p class="label">Form cues</p>
+            <ul class="mini-list clean-list" id="warmup-list">
+              <li>Short dynamic warm-up first</li>
+              <li>Keep knees stacked over feet</li>
+              <li>Slow the lowering phase</li>
+            </ul>
+          </div>
+          <div>
+            <p class="label">Daily rehab</p>
+            <ul class="mini-list clean-list" id="mobility-list">
+              <li>Do one stretching block</li>
+              <li>Add a short mobility circuit</li>
+              <li>Finish with light strengthening</li>
+            </ul>
+          </div>
+        </div>
       </section>
 
-      <section class="panel-card">
-        <div class="panel-head">
-          <div>
-            <p class="label">Milestones</p>
-            <h3>Next targets</h3>
-          </div>
-          <span class="badge">2 this week</span>
-        </div>
-        <ul class="task-list">
-          <li>Restore smoother knee extension during walking</li>
-          <li>Improve single-leg control without balance drift</li>
-          <li>Keep swelling stable after loading sessions</li>
-        </ul>
+      <section class="recovery-guidance-grid">
+        <article class="panel-card guidance-block">
+          <p class="label">Real-time feedback</p>
+          <h3>Adjust the movement</h3>
+          <p class="support-text compact-copy" id="workout-adjustment">Reduce depth, slow the rep, and stop if control drops.</p>
+        </article>
+        <article class="panel-card guidance-block">
+          <p class="label">Recovery tip</p>
+          <h3>Stay low risk</h3>
+          <p class="support-text compact-copy" id="recovery-tip">Log soreness later today and keep the next session easy.</p>
+        </article>
       </section>
 
     </section>

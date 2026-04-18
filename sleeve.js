@@ -1,6 +1,4 @@
-const sleeveToggle = document.getElementById("sleeve-toggle");
 const sleeveStatus = document.getElementById("sleeve-status");
-const sleeveAngle = document.getElementById("sleeve-angle");
 const sleeveAnalyze = document.getElementById("sleeve-analyze");
 const angleValue = document.getElementById("angle-value");
 const angleNote = document.getElementById("angle-note");
@@ -9,42 +7,33 @@ const movementNote = document.getElementById("movement-note");
 const riskValue = document.getElementById("risk-value");
 const riskNote = document.getElementById("risk-note");
 const sleeveFeedback = document.getElementById("sleeve-feedback");
+let currentMockAngle = 0;
 
-function setSleeveDisconnected() {
-  if (!sleeveToggle) {
+function getMockAngle() {
+  return Math.floor(Math.random() * 38) + 24;
+}
+
+function setSleeveReady() {
+  if (!sleeveAnalyze) {
     return;
   }
 
-  sleeveStatus.textContent = "Off";
-  sleeveAngle.disabled = true;
-  sleeveAnalyze.disabled = true;
-  sleeveAngle.value = 0;
-  angleValue.textContent = "0°";
-  angleNote.textContent = "Waiting";
-  movementValue.textContent = "0%";
-  movementNote.textContent = "No data";
-  riskValue.textContent = "0";
-  riskNote.textContent = "Connect sleeve";
-  sleeveFeedback.textContent = "Feedback: connect the sleeve to start reading knee movement.";
-}
-
-function setSleeveConnected() {
-  sleeveStatus.textContent = "Live";
-  sleeveAngle.disabled = false;
+  sleeveStatus.textContent = "Demo feed";
   sleeveAnalyze.disabled = false;
-  angleValue.textContent = `${Number(sleeveAngle.value) || 0}°`;
-  angleNote.textContent = "Connected";
+  currentMockAngle = getMockAngle();
+  angleValue.textContent = `${currentMockAngle}°`;
+  angleNote.textContent = "Sensor preview";
   movementValue.textContent = "0%";
   movementNote.textContent = "Ready";
   riskValue.textContent = "0";
   riskNote.textContent = "Awaiting read";
-  sleeveFeedback.textContent = "Feedback: enter a knee angle to get a quick AI risk read for recovery.";
+  sleeveFeedback.textContent = "Feedback: demo sleeve data is ready. Analyze the latest feed for a recovery-safe risk check.";
 }
 
 function setLoadingState() {
   sleeveAnalyze.disabled = true;
   sleeveAnalyze.textContent = "Reading...";
-  sleeveFeedback.textContent = "Feedback: checking the current knee angle and building a recovery-safe risk read.";
+  sleeveFeedback.textContent = "Feedback: checking the latest sleeve reading and building a recovery-safe risk read.";
 }
 
 function setIdleButton() {
@@ -53,7 +42,7 @@ function setIdleButton() {
 }
 
 async function analyzeSleeveAngle() {
-  const angle = Number(sleeveAngle.value) || 0;
+  const angle = currentMockAngle || getMockAngle();
 
   angleValue.textContent = `${angle}°`;
   setLoadingState();
@@ -87,31 +76,16 @@ async function analyzeSleeveAngle() {
     riskNote.textContent = "Unavailable";
     sleeveFeedback.textContent = `Feedback: ${error.message}`;
   } finally {
-    if (sleeveToggle.checked) {
-      setIdleButton();
-    }
+    setIdleButton();
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (!sleeveToggle) {
+  if (!sleeveAnalyze) {
     return;
   }
 
-  setSleeveDisconnected();
-
-  sleeveToggle.addEventListener("change", () => {
-    if (sleeveToggle.checked) {
-      setSleeveConnected();
-      return;
-    }
-
-    setSleeveDisconnected();
-  });
-
-  sleeveAngle.addEventListener("input", () => {
-    angleValue.textContent = `${Number(sleeveAngle.value) || 0}°`;
-  });
+  setSleeveReady();
 
   sleeveAnalyze.addEventListener("click", analyzeSleeveAngle);
 });

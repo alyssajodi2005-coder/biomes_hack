@@ -133,13 +133,13 @@ a {
 .page-intro {
   margin-top: 10px;
   margin-bottom: 12px;
-  padding: 14px 14px 12px;
-  border-radius: 22px;
+  padding: 16px 16px 14px;
+  border-radius: 24px;
   background:
     radial-gradient(circle at top right, rgba(217, 240, 107, 0.3), transparent 34%),
     linear-gradient(180deg, #ffffff 0%, #f4f8ef 100%);
   border: 1px solid var(--line);
-  box-shadow: 0 10px 24px rgba(31, 58, 36, 0.06);
+  box-shadow: 0 12px 24px rgba(31, 58, 36, 0.06);
 }
 
 .app-header,
@@ -170,7 +170,7 @@ a {
 .micro-copy,
 .label {
   margin: 0;
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-weight: 800;
@@ -181,7 +181,6 @@ a {
 }
 .label {
   color: var(--green-deep);
-  font-size: 1rem;
 }
 
 h1,
@@ -233,9 +232,9 @@ h3 {
 .mini-action-card,
 .mini-stat {
   border: 1px solid var(--line);
-  border-radius: 28px;
+  border-radius: 24px;
   background: var(--card);
-  box-shadow: 0 14px 30px rgba(31, 58, 36, 0.08);
+  box-shadow: 0 12px 24px rgba(31, 58, 36, 0.08);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
@@ -318,8 +317,8 @@ h3 {
 
 .panel-card,
 .tips-card {
-  margin-top: 8px;
-  padding: 12px;
+  margin-top: 10px;
+  padding: 16px;
 }
 
 .badge {
@@ -331,9 +330,9 @@ h3 {
 
 .task-list {
   padding-left: 20px;
-  margin-top: 8px;
+  margin-top: 10px;
   color: var(--ink);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .summary-copy,
@@ -363,14 +362,36 @@ h3 {
 .device-grid,
 .athlete-list {
   display: grid;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .device-status-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.sensor-source-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: #f4f8f1;
+  border: 1px solid var(--line);
+}
+
+.sensor-copy {
+  margin-top: 6px;
+  font-size: 0.82rem;
+}
+
+.therapy-stack {
+  display: grid;
+  gap: 16px;
 }
 
 .sleeve-controls {
@@ -382,8 +403,8 @@ h3 {
 }
 
 .sleeve-action {
-  min-height: 46px;
-  padding: 10px 14px;
+  min-height: 44px;
+  padding: 10px 16px;
   border-radius: 16px;
   flex: 0 0 auto;
 }
@@ -401,7 +422,7 @@ h3 {
 }
 
 .signal-card {
-  padding: 10px;
+  padding: 12px 10px;
   text-align: center;
 }
 
@@ -418,7 +439,7 @@ h3 {
   display: block;
   margin: 6px 0 2px;
   font-family: "Fraunces", serif;
-  font-size: 1rem;
+  font-size: 1.08rem;
 }
 
 .signal-card small {
@@ -431,8 +452,8 @@ h3 {
 }
 
 .device-tip {
-  margin-top: 10px;
-  padding: 10px 12px;
+  margin-top: 12px;
+  padding: 12px 14px;
   border-radius: 18px;
   background: #f4f8f1;
   border: 1px solid var(--line);
@@ -572,13 +593,20 @@ h3 {
 }
 
 .accent-card {
-  background: linear-gradient(180deg, #f9fcf7 0%, #edf6e7 100%);
+  background: linear-gradient(180deg, #fbfdf9 0%, #eef6e9 100%);
 }
 
 .quick-grid,
 .split-metrics {
   display: grid;
-  gap: 10px;
+  gap: 12px;
+}
+
+.recovery-guidance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 10px;
 }
 
 .quick-grid {
@@ -635,8 +663,8 @@ h3 {
 }
 
 .settings-list {
-  gap: 12px;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .input-stack {
@@ -645,8 +673,8 @@ h3 {
 }
 
 .form-grid {
-  gap: 12px;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .form-field {
@@ -656,16 +684,16 @@ h3 {
 
 .field-label {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .form-field input,
 .form-field select {
   width: 100%;
-  padding: 10px 12px;
+  padding: 11px 12px;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: #f6faf3;
@@ -685,8 +713,8 @@ h3 {
 
 .form-note {
   color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.5;
+  font-size: 0.76rem;
+  line-height: 1.45;
 }
 
 .primary-action:disabled {
@@ -697,7 +725,7 @@ h3 {
 .setting-row {
   grid-template-columns: 1fr auto;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 11px 12px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.62);
   border: 1px solid var(--line);
@@ -735,7 +763,7 @@ h3 {
 
 .mini-action-card,
 .mini-stat {
-  padding: 12px;
+  padding: 14px;
   text-decoration: none;
   color: var(--ink);
 }
@@ -761,15 +789,31 @@ h3 {
 
 .mini-stat strong {
   display: block;
-  font-size: 1.05rem;
-  line-height: 1.35;
+  font-size: 1.08rem;
+  line-height: 1.4;
 }
 
 .mini-list {
-  margin: 8px 0 0;
+  margin: 10px 0 0;
   padding-left: 18px;
   color: var(--ink);
-  line-height: 1.55;
+  line-height: 1.6;
+}
+
+.clean-list {
+  margin-top: 6px;
+}
+
+.clean-list li + li {
+  margin-top: 6px;
+}
+
+.guidance-block {
+  margin-top: 0;
+}
+
+.guidance-block h3 {
+  margin-top: 6px;
 }
 
 .mini-list li + li {
@@ -780,6 +824,39 @@ h3 {
   padding: 8px 12px;
   background: #d7f2dc;
   color: var(--green-deep);
+}
+
+.panel-head {
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.panel-head h3 {
+  margin-top: 5px;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.split-metrics {
+  grid-template-columns: 1fr;
+  margin-top: 10px;
+}
+
+.split-metrics .mini-stat {
+  min-height: 0;
+}
+
+.summary-copy,
+.compact-copy,
+.support-text {
+  max-width: 30ch;
+}
+
+.device-card .support-text,
+.sensor-source-row .support-text,
+.device-tip p,
+.page-intro .support-text {
+  max-width: none;
 }
 
 .progress-block {
@@ -873,12 +950,24 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .recovery-guidance-grid {
+    grid-template-columns: 1fr;
+  }
+
   .device-grid {
     grid-template-columns: 1fr;
   }
 
   .sleeve-controls {
     grid-template-columns: 1fr;
+  }
+
+  .sensor-source-row {
+    grid-template-columns: 1fr;
+  }
+
+  .therapy-stack {
+    gap: 12px;
   }
 
   .coach-toggle-row,

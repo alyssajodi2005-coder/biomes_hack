@@ -38,11 +38,10 @@ if (form) {
 
     const formData = new FormData(form);
     const payload = {
-      exercise: formData.get("exercise"),
       painLevel: Number(formData.get("painLevel")),
-      warmupDone: formData.get("warmupDone") === "yes",
-      instabilityScore: Number(formData.get("instabilityScore")),
-      fatigueScore: Number(formData.get("fatigueScore")),
+      sorenessLevel: Number(formData.get("sorenessLevel")),
+      swellingToday: formData.get("swellingToday") === "yes",
+      confidenceLevel: Number(formData.get("confidenceLevel")),
       goal: formData.get("goal"),
     };
 
@@ -74,21 +73,21 @@ if (form) {
     } catch (error) {
       riskLevel.textContent = "Unavailable";
       summaryText.textContent = error.message;
-      workoutAdjustment.textContent = "No adjustment available until the AI response succeeds.";
+      workoutAdjustment.textContent = "No movement guidance available until the AI response succeeds.";
       recoveryTip.textContent = "Check billing or quota, then try again.";
       renderList(warmupList, [
-        "Complete your usual warm-up first",
-        "Use low-impact movement",
+        "Keep movements slow and clean",
+        "Use a smaller range today",
         "Retry once AI service is available",
       ]);
       renderList(mobilityList, [
-        "Light ankle mobility",
-        "Gentle hip opener",
-        "Easy quad stretch",
+        "Short stretching block",
+        "Gentle mobility drill",
+        "Easy strengthening set",
       ]);
     } finally {
       submitButton.disabled = false;
-      submitButton.textContent = "Get AI plan";
+      submitButton.textContent = "Get guidance";
     }
   });
 }
