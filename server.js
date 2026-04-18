@@ -52,6 +52,52 @@ const planSchema = {
   },
 };
 
+const sleeveSchema = {
+  name: "sleeve_risk_read",
+  strict: true,
+  schema: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      angle_degrees: {
+        type: "integer",
+        minimum: 0,
+        maximum: 140,
+      },
+      angle_note: {
+        type: "string",
+      },
+      movement_score: {
+        type: "integer",
+        minimum: 0,
+        maximum: 100,
+      },
+      movement_note: {
+        type: "string",
+      },
+      risk_level: {
+        type: "string",
+        enum: ["low", "moderate", "high"],
+      },
+      risk_note: {
+        type: "string",
+      },
+      feedback: {
+        type: "string",
+      },
+    },
+    required: [
+      "angle_degrees",
+      "angle_note",
+      "movement_score",
+      "movement_note",
+      "risk_level",
+      "risk_note",
+      "feedback",
+    ],
+  },
+};
+
 function parseDotEnv(source) {
   const values = {};
   for (const line of source.split(/\r?\n/)) {
@@ -280,6 +326,103 @@ Rules:
   }
 }
 
+async function handleSleeveRisk(req, res) {
+  try {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return json(res, 500, {
+        error: "Missing OPENAI_API_KEY. Add it to a local .env file or your server environment.",
+      });
+    }
+
+    const rawBody = await readBody(req);
+    const body = JSON.parse(rawBody || "{}");
+    const angle = body?.angle;
+
+    if (typeof angle !== "number" || Number.isNaN(angle) || angle < 0 || angle > 140) {
+      return json(res, 400, {
+        error: "Invalid sleeve angle. Use a number between 0 and 140.",
+      });
+    }
+
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-5.4-mini",
+        input: [
+          {
+            role: "system",
+            content: [
+              {
+                type: "input_text",
+                text:
+                  "You are a cautious knee recovery assistant reading a single sleeve sensor angle. Do not diagnose. Interpret the angle conservatively for a recovering knee and return short mobile-friendly JSON only.",
+              },
+            ],
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "input_text",
+                text: `Sleeve input:
+- Knee angle: ${angle} degrees
+
+Return JSON only with the requested keys.
+
+Rules:
+- Use the angle input only.
+- Assume the user is recovering from a knee injury and wants low-risk guidance.
+- angle_note must be 1 short phrase.
+- movement_note must be 1 short phrase.
+- risk_note must be 1 short phrase.
+- feedback must be 1 short sentence under 18 words.
+- movement_score should be a cautious 0-100 estimate of how demanding this angle is for a recovering knee.
+- risk_level should be low, moderate, or high.
+- Do not diagnose or claim certainty.`,
+              },
+            ],
+          },
+        ],
+        text: {
+          format: {
+            type: "json_schema",
+            ...sleeveSchema,
+          },
+        },
+        max_output_tokens: 250,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      const mapped = mapOpenAiErrorMessage(response.status, errorText);
+      return json(res, mapped.statusCode, {
+        error: mapped.error,
+      });
+    }
+
+    const data = await response.json();
+    const outputText = extractResponseText(data);
+
+    if (!outputText) {
+      return json(res, 500, {
+        error: "The AI service returned an unexpected response format.",
+      });
+    }
+
+    return json(res, 200, JSON.parse(outputText));
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to interpret sleeve data.";
+    return json(res, 500, { error: message });
+  }
+}
+
 await loadEnvFile();
 
 const server = createServer(async (req, res) => {
@@ -289,6 +432,10 @@ const server = createServer(async (req, res) => {
 
   if (req.method === "POST" && req.url === "/api/ai-plan") {
     return handleAiPlan(req, res);
+  }
+
+  if (req.method === "POST" && req.url === "/api/sleeve-risk") {
+    return handleSleeveRisk(req, res);
   }
 
   if (req.method === "GET") {

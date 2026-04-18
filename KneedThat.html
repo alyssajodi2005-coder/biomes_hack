@@ -13,6 +13,7 @@
   />
   <link rel="stylesheet" href="kneedthat.css" />
   <script src="coach-mode.js" defer></script>
+  <script src="sleeve.js" defer></script>
 </head>
 <body>
   <main class="app-stage">
@@ -39,30 +40,48 @@
       <section class="panel-card device-card">
         <div class="panel-head">
           <div>
-            <h1 class="label">Knee sleeve input</h1>
+            <p class="label">Knee sleeve input</p>
+            <h3>Sensor + AI recovery read</h3>
           </div>
-          <span class="status-pill">Live</span>
+          <div class="device-status-wrap">
+            <span class="status-pill" id="sleeve-status">Off</span>
+            <label class="switch-toggle" for="sleeve-toggle" aria-label="Toggle sleeve connection">
+              <input type="checkbox" id="sleeve-toggle" />
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+        <p class="support-text">
+          Connect the sleeve, enter the knee angle, and let the AI interpret how that movement could affect a recovering knee.
+        </p>
+        <div class="sleeve-controls">
+          <label class="form-field">
+            <span class="field-label">Knee angle</span>
+            <input type="number" id="sleeve-angle" min="0" max="140" value="0" disabled />
+          </label>
+          <button type="button" class="primary-action sleeve-action" id="sleeve-analyze" disabled>
+            Interpret sleeve
+          </button>
         </div>
         <div class="device-grid">
           <article class="signal-card">
-            <span class="signal-label">Load</span>
-            <strong>72%</strong>
-            <small>Stable</small>
+            <span class="signal-label">Angle</span>
+            <strong id="angle-value">0°</strong>
+            <small id="angle-note">Waiting</small>
           </article>
           <article class="signal-card">
-            <span class="signal-label">Symmetry</span>
-            <strong>88%</strong>
-            <small>Good</small>
+            <span class="signal-label">Movement</span>
+            <strong id="movement-value">0%</strong>
+            <small id="movement-note">No data</small>
           </article>
           <article class="signal-card alert-signal">
             <span class="signal-label">Risk</span>
-            <strong>Moderate</strong>
-            <small>Watch fatigue</small>
+            <strong id="risk-value">0</strong>
+            <small id="risk-note">Connect sleeve</small>
           </article>
         </div>
         <div class="tip device-tip">
-          <span class="tip-icon">🦿</span>
-          <p>AI feedback: landing control dropped in the last set, so keep the next block low impact and slower tempo.</p>
+          <p id="sleeve-feedback">Feedback: connect the sleeve to start reading knee movement.</p>
         </div>
       </section>
 

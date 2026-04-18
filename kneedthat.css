@@ -367,6 +367,27 @@ h3 {
   margin-top: 10px;
 }
 
+.device-status-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sleeve-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  margin-top: 10px;
+}
+
+.sleeve-action {
+  min-height: 46px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  flex: 0 0 auto;
+}
+
 .device-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -411,6 +432,10 @@ h3 {
 
 .device-tip {
   margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: #f4f8f1;
+  border: 1px solid var(--line);
 }
 
 .coach-toggle-row {
@@ -648,6 +673,10 @@ h3 {
   font: inherit;
 }
 
+.device-card .form-field {
+  margin: 0;
+}
+
 .form-actions {
   display: grid;
   gap: 10px;
@@ -658,6 +687,11 @@ h3 {
   color: var(--muted);
   font-size: 0.8rem;
   line-height: 1.5;
+}
+
+.primary-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .setting-row {
@@ -828,7 +862,7 @@ h3 {
   }
 
   .top-links {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .settings-link {
@@ -840,6 +874,10 @@ h3 {
   }
 
   .device-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sleeve-controls {
     grid-template-columns: 1fr;
   }
 
