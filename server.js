@@ -15,43 +15,35 @@ const planSchema = {
     type: "object",
     additionalProperties: false,
     properties: {
-      risk_level: {
-        type: "string",
-        enum: ["low", "moderate", "high"],
-      },
       summary: {
+        type: "string",
+      },
+      todays_focus: {
         type: "string",
       },
       daily_angle_goal: {
         type: "string",
       },
-      warmup_plan: {
+      recommended_activities: {
         type: "array",
         items: { type: "string" },
         minItems: 3,
         maxItems: 3,
       },
-      mobility_plan: {
-        type: "array",
-        items: { type: "string" },
-        minItems: 3,
-        maxItems: 3,
-      },
-      workout_adjustment: {
+      recovery_summary: {
         type: "string",
       },
-      recovery_tip: {
+      caution_note: {
         type: "string",
       },
     },
     required: [
-      "risk_level",
       "summary",
+      "todays_focus",
       "daily_angle_goal",
-      "warmup_plan",
-      "mobility_plan",
-      "workout_adjustment",
-      "recovery_tip",
+      "recommended_activities",
+      "recovery_summary",
+      "caution_note",
     ],
   },
 };
@@ -263,7 +255,7 @@ async function handleAiPlan(req, res) {
               {
                 type: "input_text",
                 text:
-                  "You are a cautious ACL recovery assistant. Do not diagnose, do not claim certainty, do not replace a clinician, and base recommendations only on the provided inputs. Return concise JSON only. Keep every recommendation short, practical, and easy to scan on a mobile app.",
+                  "You are a supportive ACL recovery companion for a post-op ACL patient recovering at home. Do not diagnose, do not claim certainty, and do not replace a clinician. Build concise, practical guidance that feels medically adjacent, supportive, and easy to scan on a mobile screen.",
               },
             ],
           },
@@ -285,21 +277,33 @@ Rules:
 - Use only the provided inputs.
 - Keep responses supportive, cautious, and low risk.
 - Do not diagnose.
-- Focus on recovery habits, form cues, mobility, and lower-risk strengthening.
+- Focus on recovery habits, controlled movement, mobility, and simple activation.
 - Use these bend milestones:
-  Week 1: 60-70 degrees
+  Week 1: 90 degrees for this demo
   Week 2: 90-100 degrees
+  Week 3: 100-110 degrees
   Weeks 4-6: 120-135+ degrees
-- For week 3, bridge carefully between week 2 and weeks 4-6.
+- Make the plan specific to the exact post-op week and post-op day provided.
+- The recommendations should change across weeks as recovery progresses.
+- daily_angle_goal should be concise and suitable for a mobile card.
 - If confidence is low, lower movement intensity and simplify the session.
 - If pain or soreness is high, favor lighter rehab habits and recovery.
 - If swelling is present, recommend a calmer day and lighter loading.
-- Summary must be 1 short sentence under 22 words.
+- Return these keys only:
+  summary
+  todays_focus
+  daily_angle_goal
+  recommended_activities
+  recovery_summary
+  caution_note
+- summary must be 1 short sentence under 20 words.
+- todays_focus must be 1 short sentence under 10 words.
 - daily_angle_goal must be 1 short sentence under 12 words.
-- Each warmup_plan item must be under 10 words.
-- Each mobility_plan item must be under 10 words.
-- workout_adjustment must be 1 short sentence under 18 words.
-- recovery_tip must be 1 short sentence under 18 words.
+- recommended_activities must contain exactly 3 believable rehab activities for that specific stage.
+- Week 1 activities should sound like heel slides, quad sets, assisted knee bends, gentle mobility work.
+- Later weeks can sound slightly more progressive, but still recovery-focused and believable.
+- recovery_summary must be 1 short sentence under 18 words.
+- caution_note must be 1 short sentence under 16 words.
 - Avoid long explanations, stacked clauses, and medical language.
 - Return concise JSON only with the requested keys.`,
               },
@@ -375,7 +379,7 @@ async function handleSleeveRisk(req, res) {
               {
                 type: "input_text",
                 text:
-                  "You are a cautious knee recovery assistant reading a single sleeve sensor angle. Do not diagnose. Interpret the angle conservatively for a recovering knee and return short mobile-friendly JSON only.",
+                  "You are a cautious knee recovery assistant reading a live brace angle. Do not diagnose. Interpret the angle conservatively for a recovering knee and return short mobile-friendly JSON only.",
               },
             ],
           },
@@ -391,7 +395,7 @@ Return JSON only with the requested keys.
 
 Rules:
 - Use the angle input only.
-- Assume the user is recovering from a knee injury and wants low-risk guidance.
+- Assume the user is in week 1 recovery and wants low-risk guidance.
 - angle_note must be 1 short phrase.
 - movement_note must be 1 short phrase.
 - risk_note must be 1 short phrase.

@@ -238,6 +238,17 @@ h3 {
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
+.inset-card {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #f9fcf6 0%, #f1f7ec 100%);
+  box-shadow: none;
+}
+
+.stage-summary-card {
+  grid-column: 1 / -1;
+}
+
 .acl-ai-card {
   margin-top: 18px;
   padding: 22px;
@@ -271,6 +282,7 @@ h3 {
 }
 
 .primary-action,
+.secondary-action,
 .ghost-action {
   display: inline-flex;
   align-items: center;
@@ -288,6 +300,12 @@ h3 {
   color: #1c321e;
 }
 
+.secondary-action {
+  background: #eef5e8;
+  color: var(--green-deep);
+  border: 1px solid var(--line);
+}
+
 .ghost-action {
   background: rgba(255, 255, 255, 0.12);
   color: #f5fff0;
@@ -296,6 +314,28 @@ h3 {
 
 .action-link {
   text-decoration: none;
+}
+
+.sensor-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 312px;
+  margin: 0 auto;
+}
+
+.sensor-source-row {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.sleeve-action {
+  min-width: 0;
+  padding: 12px 10px;
+  max-width: 150px;
 }
 
 .stats-row {
@@ -746,6 +786,17 @@ h3 {
 .setting-row strong {
   color: var(--ink);
   font-size: 0.96rem;
+}
+
+.settings-input {
+  min-width: 138px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #f9fcf6;
+  color: var(--green-deep);
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .input-row {

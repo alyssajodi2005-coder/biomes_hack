@@ -1,7 +1,10 @@
 const form = document.getElementById("ai-plan-form");
 
 if (form) {
-  const riskLevel = document.getElementById("risk-level");
+  const planStage = document.getElementById("plan-stage");
+  const recoveryIntroTitle = document.getElementById("recovery-intro-title");
+  const recoveryIntroCopy = document.getElementById("recovery-intro-copy");
+  const recoveryPlanBadge = document.getElementById("recovery-plan-badge");
   const dailyAngleGoal = document.getElementById("daily-angle-goal");
   const summaryText = document.getElementById("summary-text");
   const warmupList = document.getElementById("warmup-list");
@@ -34,13 +37,49 @@ if (form) {
     });
   };
 
+  const readRecoveryStage = () => {
+    const storedWeek = Number(window.localStorage.getItem("kneedthat-postop-week")) || 1;
+    const storedDay = Number(window.localStorage.getItem("kneedthat-postop-day")) || 5;
+    const stageText = `Week ${storedWeek}, Day ${storedDay}`;
+    const introText = storedWeek === 1
+      ? `Build a day plan around Week ${storedWeek}, Day ${storedDay} recovery.`
+      : `Build a day plan around Week ${storedWeek}, Day ${storedDay} progress.`;
+    if (planStage) {
+      if (storedWeek === 1) {
+        planStage.textContent = "90°";
+      } else if (storedWeek === 2) {
+        planStage.textContent = "100°";
+      } else if (storedWeek === 3) {
+        planStage.textContent = "110°";
+      } else {
+        planStage.textContent = "120°";
+      }
+    }
+    if (recoveryIntroTitle) {
+      recoveryIntroTitle.textContent = introText;
+    }
+    if (recoveryIntroCopy) {
+      recoveryIntroCopy.textContent = `Recovery is not one-size-fits-all. ${stageText} guidance adapts to symptoms and milestone progress.`;
+    }
+    if (recoveryPlanBadge) {
+      recoveryPlanBadge.textContent = stageText;
+    }
+    return {
+      postOpWeek: storedWeek,
+      postOpDay: storedDay,
+    };
+  };
+
+  readRecoveryStage();
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const formData = new FormData(form);
+    const recoveryStage = readRecoveryStage();
     const payload = {
-      postOpWeek: Number(formData.get("postOpWeek")),
-      postOpDay: Number(formData.get("postOpDay")),
+      postOpWeek: recoveryStage.postOpWeek,
+      postOpDay: recoveryStage.postOpDay,
       painLevel: Number(formData.get("painLevel")),
       sorenessLevel: Number(formData.get("sorenessLevel")),
       swellingToday: formData.get("swellingToday") === "yes",
@@ -49,7 +88,7 @@ if (form) {
     };
 
     submitButton.disabled = true;
-    submitButton.textContent = "Generating...";
+    submitButton.textContent = "Building plan...";
 
     try {
       const response = await fetch("/api/ai-plan", {
@@ -67,32 +106,34 @@ if (form) {
 
       const result = await response.json();
 
-      riskLevel.textContent = result.risk_level;
-      dailyAngleGoal.textContent = shortenText(result.daily_angle_goal, 40);
+      dailyAngleGoal.textContent = shortenText(result.todays_focus, 40);
       summaryText.textContent = shortenText(result.summary, 150);
-      workoutAdjustment.textContent = shortenText(result.workout_adjustment, 120);
-      recoveryTip.textContent = shortenText(result.recovery_tip, 120);
-      renderList(warmupList, (result.warmup_plan || []).map((item) => shortenText(item, 70)));
-      renderList(mobilityList, (result.mobility_plan || []).map((item) => shortenText(item, 70)));
+      workoutAdjustment.textContent = shortenText(result.recovery_summary, 120);
+      recoveryTip.textContent = shortenText(result.caution_note, 120);
+      renderList(warmupList, (result.recommended_activities || []).map((item) => shortenText(item, 70)));
+      renderList(mobilityList, [
+        shortenText(result.daily_angle_goal || "Work toward controlled bend", 70),
+        `Match pacing to Week ${recoveryStage.postOpWeek}, Day ${recoveryStage.postOpDay}`,
+        "Stop before compensating",
+      ]);
     } catch (error) {
-      riskLevel.textContent = "Unavailable";
-      dailyAngleGoal.textContent = "Check stage";
-      summaryText.textContent = error.message;
-      workoutAdjustment.textContent = "No movement guidance available until the AI response succeeds.";
-      recoveryTip.textContent = "Check billing or quota, then try again.";
+      dailyAngleGoal.textContent = "Protect early bend progress";
+      summaryText.textContent = "Pain and soreness may affect early progress. Focus on controlled movement.";
+      workoutAdjustment.textContent = "Based on your current input, prioritize mobility over intensity.";
+      recoveryTip.textContent = "Pause if discomfort rises and keep today’s movement controlled.";
       renderList(warmupList, [
-        "Keep movements slow and clean",
-        "Use a smaller range today",
-        "Retry once AI service is available",
+        "Heel slides",
+        "Quad sets",
+        "Supported knee bends",
       ]);
       renderList(mobilityList, [
-        "Short stretching block",
-        "Gentle mobility drill",
-        "Easy strengthening set",
+        "Gentle range-of-motion work",
+        "Light quad activation",
+        "Short walking block",
       ]);
     } finally {
       submitButton.disabled = false;
-      submitButton.textContent = "Get guidance";
+      submitButton.textContent = "Get recovery plan";
     }
   });
 }

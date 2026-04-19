@@ -10,7 +10,6 @@ from __future__ import annotations
 import argparse
 import json
 import re
-import socket
 import sys
 import time
 from pathlib import Path
@@ -28,67 +27,11 @@ def open_serial(port: str, baud: int, timeout: float = 2.0) -> serial.Serial:
     return serial.Serial(port=port, baudrate=baud, timeout=timeout)
 
 
-class SocketLineReader:
-    """Minimal line reader for a TCP socket that streams text lines."""
-
-    def __init__(
-        self,
-        host: str,
-        port: int,
-        *,
-        accept_timeout: float = 60.0,
-        recv_timeout: float = 0.5,
-    ) -> None:
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.server.bind((host, port))
-        self.server.listen(1)
-        self.server.settimeout(accept_timeout)
-        print(f"Waiting for wireless flex stream on {host}:{port} ...")
-        self.conn, self.addr = self.server.accept()
-        self.conn.settimeout(recv_timeout)
-        self.buffer = b""
-        print(f"Connected to wireless flex stream from {self.addr[0]}:{self.addr[1]}")
-
-    def readline(self) -> bytes:
-        while True:
-            if b"\n" in self.buffer:
-                line, self.buffer = self.buffer.split(b"\n", 1)
-                return line + b"\n"
-            try:
-                chunk = self.conn.recv(4096)
-            except socket.timeout:
-                return b""
-            if not chunk:
-                return b""
-            self.buffer += chunk
-
-    def reset_input_buffer(self) -> None:
-        self.buffer = b""
-
-    def close(self) -> None:
-        try:
-            self.conn.close()
-        finally:
-            self.server.close()
-
-
-def open_reader(args: argparse.Namespace):
-    if args.source == "serial":
-        return open_serial(args.port, args.baud, timeout=args.serial_timeout)
-    return SocketLineReader(
-        args.tcp_host,
-        args.tcp_port,
-        accept_timeout=args.accept_timeout,
-        recv_timeout=args.socket_timeout,
-    )
-
-
-def read_one_adc(reader, stale_ms: float = 500.0) -> float:
+def read_one_adc(ser: serial.Serial, stale_ms: float = 500.0) -> float:
     """Return the next parsed ADC value from the stream (discard stale buffered lines)."""
     deadline = time.monotonic() + stale_ms / 1000.0
     while time.monotonic() < deadline:
-        line = reader.readline().decode("utf-8", errors="replace").strip()
+        line = ser.readline().decode("utf-8", errors="replace").strip()
         if not line:
             continue
         m = FLEX_LINE_RE.search(line)
@@ -98,7 +41,7 @@ def read_one_adc(reader, stale_ms: float = 500.0) -> float:
 
 
 def sample_adc(
-    reader,
+    ser: serial.Serial,
     n: int,
     settle_s: float,
     discard: int,
@@ -107,12 +50,12 @@ def sample_adc(
     time.sleep(settle_s)
     for _ in range(discard):
         try:
-            read_one_adc(reader, stale_ms=2000.0)
+            read_one_adc(ser, stale_ms=2000.0)
         except TimeoutError:
             break
     values: List[float] = []
     for _ in range(n):
-        values.append(read_one_adc(reader, stale_ms=3000.0))
+        values.append(read_one_adc(ser, stale_ms=3000.0))
     return float(np.median(values))
 
 
@@ -242,18 +185,28 @@ def save_calibration(path: Path, coef: np.ndarray, meta: dict) -> None:
     print(f"Saved calibration to {path}")
 
 
+def parse_angles_list(raw_angles: str) -> List[float]:
+    return [float(a.strip()) for a in raw_angles.split(",") if a.strip()]
+
+
+def ensure_angles_for_degree(angles: Sequence[float], degree: int) -> None:
+    if len(angles) < degree + 1:
+        raise ValueError(
+            f"Need at least {degree + 1} angles for degree-{degree} fit; got {len(angles)}."
+        )
+
+
 def run_calibrate(args: argparse.Namespace) -> None:
-    angles: List[float] = [
-        float(a.strip()) for a in args.angles.split(",") if a.strip()
-    ]
+    angles = parse_angles_list(args.angles)
     if len(angles) < 2:
         print("Provide at least two comma-separated angles, e.g. --angles 0,45,90")
         sys.exit(1)
+    ensure_angles_for_degree(angles, args.degree)
 
-    reader = open_reader(args)
+    ser = open_serial(args.port, args.baud)
     try:
         time.sleep(args.open_delay)
-        reader.reset_input_buffer()
+        ser.reset_input_buffer()
 
         adcs: List[float] = []
         raw_runs: List[List[float]] = []
@@ -267,7 +220,7 @@ def run_calibrate(args: argparse.Namespace) -> None:
                 )
                 input(prompt)
                 adc = sample_adc(
-                    reader,
+                    ser,
                     n=args.samples,
                     settle_s=args.settle,
                     discard=args.discard,
@@ -320,7 +273,70 @@ def run_calibrate(args: argparse.Namespace) -> None:
         plot_path = Path(args.plot) if args.plot else out_cal.with_suffix(".png")
         plot_calibration(adcs, angles, coef, plot_path, show=args.show)
     finally:
-        reader.close()
+        ser.close()
+
+
+def run_merge(args: argparse.Namespace) -> None:
+    paths = [Path(p) for p in args.inputs]
+    if len(paths) < 2:
+        print("Provide at least two calibration JSON files to merge.")
+        sys.exit(1)
+
+    payloads = [json.loads(path.read_text(encoding="utf-8")) for path in paths]
+    metas = [payload.get("meta", {}) for payload in payloads]
+    angle_sets = [list(meta.get("angles_deg") or []) for meta in metas]
+    first_angles = angle_sets[0]
+    if not first_angles:
+        print(f"Missing angles_deg in calibration file: {paths[0]}")
+        sys.exit(1)
+
+    for path, angles in zip(paths[1:], angle_sets[1:]):
+        if angles != first_angles:
+            print(
+                f"Angle steps do not match. {paths[0].name} has {first_angles}, "
+                f"but {path.name} has {angles}."
+            )
+            sys.exit(1)
+
+    ensure_angles_for_degree(first_angles, args.degree)
+
+    adcs_per_run: List[np.ndarray] = []
+    collected_raw_runs: List[List[List[float]]] = []
+    for path, meta in zip(paths, metas):
+        adcs = meta.get("adcs")
+        if not adcs or len(adcs) != len(first_angles):
+            print(f"Missing or invalid ADC list in {path}")
+            sys.exit(1)
+        adcs_per_run.append(np.asarray(adcs, dtype=float))
+        raw_runs = meta.get("raw_runs")
+        if raw_runs:
+            collected_raw_runs.append(raw_runs)
+
+    merged_adcs = np.mean(np.vstack(adcs_per_run), axis=0)
+    coef = fit_poly(merged_adcs, first_angles, degree=args.degree)
+
+    print("\nMerged calibration summary:")
+    print(f"  Source files: {len(paths)}")
+    print(f"  Angles: {first_angles}")
+    print(f"  Averaged ADCs: {[round(v, 2) for v in merged_adcs.tolist()]}")
+    print("  Coefficients (high→low power):")
+    print(f"    {coef}\n")
+
+    meta = {
+        "angles_deg": first_angles,
+        "adcs": merged_adcs.tolist(),
+        "merged_from": [str(path) for path in paths],
+        "merge_count": len(paths),
+    }
+    if collected_raw_runs:
+        meta["raw_runs_by_file"] = {
+            path.name: runs for path, runs in zip(paths, collected_raw_runs)
+        }
+
+    out_cal = Path(args.out)
+    save_calibration(out_cal, coef, meta)
+    plot_path = Path(args.plot) if args.plot else out_cal.with_suffix(".png")
+    plot_calibration(merged_adcs, first_angles, coef, plot_path, show=args.show)
 
 
 def run_monitor(args: argparse.Namespace) -> None:
@@ -332,22 +348,17 @@ def run_monitor(args: argparse.Namespace) -> None:
     min_angle = float(min(angles)) if angles else None
     max_angle = float(max(angles)) if angles else None
 
-    reader = open_reader(args)
+    ser = open_serial(args.port, args.baud)
     try:
         time.sleep(args.open_delay)
-        reader.reset_input_buffer()
-        source_details = (
-            args.port
-            if args.source == "serial"
-            else f"{args.tcp_host}:{args.tcp_port}"
-        )
+        ser.reset_input_buffer()
         print(
-            f"Streaming flex sensor angles from {source_details} using {calibration_path}.\n"
+            f"Streaming flex sensor angles from {args.port} using {calibration_path}.\n"
             "Press Ctrl+C to stop.\n"
         )
 
         while True:
-            adc = read_one_adc(reader, stale_ms=args.timeout_ms)
+            adc = read_one_adc(ser, stale_ms=args.timeout_ms)
             angle = adc_to_angle(
                 adc, coef, min_angle=min_angle, max_angle=max_angle
             )
@@ -357,51 +368,7 @@ def run_monitor(args: argparse.Namespace) -> None:
     except KeyboardInterrupt:
         print("\nStopped monitor.")
     finally:
-        reader.close()
-
-
-def add_stream_args(parser: argparse.ArgumentParser, *, default_port: str) -> None:
-    parser.add_argument(
-        "--source",
-        choices=("serial", "tcp"),
-        default="serial",
-        help="Input source for flex readings (default: %(default)s)",
-    )
-    parser.add_argument(
-        "--port",
-        default=default_port,
-        help="Serial port when --source=serial (default: %(default)s)",
-    )
-    parser.add_argument("--baud", type=int, default=9600)
-    parser.add_argument(
-        "--serial-timeout",
-        type=float,
-        default=2.0,
-        help="Serial read timeout in seconds",
-    )
-    parser.add_argument(
-        "--tcp-host",
-        default="0.0.0.0",
-        help="Host to bind when --source=tcp (default: %(default)s)",
-    )
-    parser.add_argument(
-        "--tcp-port",
-        type=int,
-        default=8765,
-        help="Port to bind when --source=tcp (default: %(default)s)",
-    )
-    parser.add_argument(
-        "--accept-timeout",
-        type=float,
-        default=60.0,
-        help="Seconds to wait for a wireless TCP device to connect",
-    )
-    parser.add_argument(
-        "--socket-timeout",
-        type=float,
-        default=0.5,
-        help="Socket recv timeout in seconds for wireless TCP reads",
-    )
+        ser.close()
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -414,7 +381,12 @@ def build_parser() -> argparse.ArgumentParser:
         "calibrate",
         help="Collect known-angle samples and fit ADC -> angle coefficients",
     )
-    add_stream_args(calibrate, default_port="/dev/cu.usbmodem1101")
+    calibrate.add_argument(
+        "--port",
+        default="/dev/cu.usbmodem1101",
+        help="Serial port (default: %(default)s)",
+    )
+    calibrate.add_argument("--baud", type=int, default=9600)
     calibrate.add_argument(
         "--angles",
         default="0,20,40,60,80,100,120",
@@ -458,11 +430,45 @@ def build_parser() -> argparse.ArgumentParser:
         help="Open an interactive plot window after saving",
     )
 
+    merge = subparsers.add_parser(
+        "merge",
+        help="Average several saved calibration runs into one final calibration",
+    )
+    merge.add_argument(
+        "inputs",
+        nargs="+",
+        help="Calibration JSON files to combine",
+    )
+    merge.add_argument(
+        "--degree", type=int, default=2, help="Polynomial degree for merged fit"
+    )
+    merge.add_argument(
+        "--out",
+        default="flex_calibration_merged.json",
+        help="Output JSON path",
+    )
+    merge.add_argument(
+        "--plot",
+        default=None,
+        metavar="PATH",
+        help="PNG path for merged calibration plot (default: same base name as --out)",
+    )
+    merge.add_argument(
+        "--show",
+        action="store_true",
+        help="Open an interactive plot window after saving",
+    )
+
     monitor = subparsers.add_parser(
         "monitor",
         help="Read serial ADC values continuously and print interpreted angles",
     )
-    add_stream_args(monitor, default_port="/dev/cu.usbmodem1101")
+    monitor.add_argument(
+        "--port",
+        default="/dev/cu.usbmodem1101",
+        help="Serial port (default: %(default)s)",
+    )
+    monitor.add_argument("--baud", type=int, default=9600)
     monitor.add_argument(
         "--calibration",
         default="flex_calibration.json",
@@ -491,6 +497,8 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "calibrate":
         run_calibrate(args)
+    elif args.command == "merge":
+        run_merge(args)
     elif args.command == "monitor":
         run_monitor(args)
     else:
