@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const port = Number(process.env.PORT || 3000);
-const host = "127.0.0.1";
+const host = process.env.HOST || "0.0.0.0";
 
 const planSchema = {
   name: "knee_plan",
