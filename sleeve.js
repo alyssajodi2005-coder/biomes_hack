@@ -171,7 +171,7 @@ function animateLiveRead() {
       }
       index += 1;
       if (index < liveAngles.length) {
-        liveReadTimeout = window.setTimeout(tick, 1500);
+        liveReadTimeout = window.setTimeout(tick, 900);
       } else {
         liveReadTimeout = null;
         resolve(currentMockAngle);
